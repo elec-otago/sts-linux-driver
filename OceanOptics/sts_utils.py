@@ -1,5 +1,7 @@
 ''' STS functions module file which contains the commonly used functions for
-    using the STS driver we have written.
+    using the STS driver we have written. This file is no neccessary for the
+    operation of the device, but it is neccessary for the use of the python
+    module in the current form.
 
     This STS-Driver is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
