@@ -1,6 +1,23 @@
 ''' This is a classfile which acts as a driver for the OceanOptics STS-VIS
     spectrometer based purely on Python code, it is formatted for use with the
     usb package for USB communication, most importantly the usb.core file.
+    There are a few methods for spectrometer functions not currently
+    Implemented in this version.
+
+    This STS-Driver is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    It is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with the software.  If not, see <http://www.gnu.org/licenses/>.
+
+    Last updated: 27/08/2014
 
     Author: Matthew West
         Department of Physics,
