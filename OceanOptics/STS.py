@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with the software.  If not, see <http://www.gnu.org/licenses/>.
 
-    Last updated: 27/08/2014
+    Last updated: 11/09/2014
 
     Author: Matthew West
         Department of Physics,
@@ -147,8 +147,8 @@ class STSVIS(object):
         '''
         string = self._query_device(0x00000100, line)
         result = ''
-        for aa in range(len(string)):
-            result += str(unichr(int(string[aa])))
+        for ab in range(len(string)):
+            result += str(unichr(int(string[ab])))
         return result
 
     def get_serial_length(self, line=1):
@@ -171,16 +171,16 @@ class STSVIS(object):
         '''
         string = self._query_device(0x00000200, line)
         result = ''
-        for aa in range(len(string)):
-            result += str(unichr(int(string[aa])))
+        for ab in range(len(string)):
+            result += str(unichr(int(string[ab])))
         return result
 
     def set_alias(self, stringname, line=1):
         ''' Sets the user allocated alias of the device, given as a string.
         '''
         if len(stringname) <= 16:
-            for aa in range(len(stringname)):
-                self.immediateData[aa] = ord(stringname[aa])
+            for ab in range(len(stringname)):
+                self.immediateData[ab] = ord(stringname[ab])
             self.immediateDataLength = len(stringname)
             self._send_command_to_device(0x00000210, line)
             self.immediateDataLength = 0
@@ -212,10 +212,10 @@ class STSVIS(object):
         if string == None:
             print "There is no User String with this Index"
         else:
-            for aa in range(len(string)):
-                dat = str(unichr(int(string[aa])))
+            for ab in range(len(string)):
+                dat = str(unichr(int(string[ab])))
                 if dat != struct.pack('<B', 0):
-                    result += str(unichr(int(string[aa])))
+                    result += str(unichr(int(string[ab])))
         return result
 
     def set_user_string(self, stringname, string_ind, line=1):
@@ -225,16 +225,16 @@ class STSVIS(object):
         if len(stringname) <= 348:
             if len(stringname) <= 15:
                 self.immediateData[0] = string_ind
-                for aa in range(len(stringname)):
-                    self.immediateData[aa+1] = ord(stringname[aa])
+                for ab in range(len(stringname)):
+                    self.immediateData[ab+1] = ord(stringname[ab])
                 self.immediateDataLength = len(stringname) + 1
                 self._send_command_to_device(0x00000310, line)
                 self.immediateDataLength = 0
             else:
                 data = np.zeros(len(stringname) + 1)
                 data[0] = string_ind
-                for aa in range(len(stringname)):
-                    data[aa+1] = ord(stringname[aa])
+                for ab in range(len(stringname)):
+                    data[ab+1] = ord(stringname[ab])
                 bb = ((len(data)/64) + 1)*64
 
                 self._update_bytes_remaining(bb)
@@ -292,8 +292,8 @@ class STSVIS(object):
         '''
         data = self._query_device(0x00101000, line)
         spectrum = np.zeros(len(data)/2)
-        for aa in range(len(spectrum)):
-            spectrum[aa] = data[aa*2] + 256*(data[aa*2 + 1])
+        for ab in range(len(spectrum)):
+            spectrum[ab] = data[ab*2] + 256*(data[ab*2 + 1])
         return spectrum
 
     def get_raw_spectrum(self, line=1):
@@ -302,8 +302,8 @@ class STSVIS(object):
         '''
         data = self._query_device(0x00101100, line)
         spectrum = np.zeros(len(data)/2)
-        for aa in range(len(spectrum)):
-            spectrum[aa] = data[aa*2] + 256*(data[aa*2 + 1])
+        for ab in range(len(spectrum)):
+            spectrum[ab] = data[ab*2] + 256*(data[ab*2 + 1])
         return spectrum
 
     def get_partial_spectrum_mode(self, line=1):
@@ -492,7 +492,7 @@ class STSVIS(object):
         '''
         self.immediateData[0] = index
         self.immediateData[1:5] = struct.unpack('<4B', struct.pack('<f', \
-            coeff));
+            coeff))
         self.immediateDataLength = 5
         self._send_command_to_device(0x00180111, line)
         self.immediateDataLength = 0
@@ -516,7 +516,7 @@ class STSVIS(object):
         ''' Sets the non linearity coefficient with the index given to be coeff.
         '''
         self.immediateData[0] = index
-        self.immediateData[1:5] = struct.unpack('<4B', struct.pack('<f', coeff));
+        self.immediateData[1:5] = struct.unpack('<4B', struct.pack('<f', coeff))
         self.immediateDataLength = 5
         self._send_command_to_device(0x00181111, line)
         self.immediateDataLength = 0
@@ -529,13 +529,13 @@ class STSVIS(object):
         try:
             data = self._query_device(0x00182001, line)
         except STS_Error:
-            print 'There is no data for irradiance calibration/'
-            pass
+            print 'There is no data for irradiance calibration.'
         else:
             calib = np.zeros(len(data)/4)
-            for aa in range(len(calib)):
-                calib[aa] = struct.unpack('<f', struct.pack('<4B', data[0+aa*4], \
-                    data[1+aa*4], data[2+aa*4], data[3+aa*4]))[0]
+            for ab in range(len(calib)):
+                calib[ab] = struct.unpack('<f', struct.pack('<4B', \
+                    data[0+ab*4], data[1+ab*4], data[2+ab*4], \
+                    data[3+ab*4]))[0]
             return calib
 
     def get_irrad_calib_count(self, line=1):
@@ -554,14 +554,34 @@ class STSVIS(object):
             data = self._query_device(0x00182003, line)
         except STS_Error:
             print 'There is no area for collection set.'
-            pass
         else:
             area = struct.unpack('<f', struct.pack('<4B', data[0], data[1], \
                 data[2], data[3]))[0]
             return area
 
-    def set_irrad_calib(self, payload, line=1):
-        NotImplementedError
+    def set_irrad_calib(self, calibration, line=1):
+        ''' Send a list of floats as the calibration. Request has up to 4096
+            bytes in payload. This corresponds to up to 1024 floats. Sending a
+            zero-length buffer will delete any irradiance calibration from STS.
+            No reply. This is data storage. 
+        '''
+        ind = 0
+        count = 0
+        data = np.zeros(len(calibration)*4)
+        for index in calibration:
+            data[ind] = index%256
+            ind += 1
+            data[ind] = (index/256)%256
+            ind += 1
+            data[ind] = (index/(256**2))%256
+            ind += 1
+            data[ind] = (index/(256**3))%256
+            ind += 1
+            
+            self._update_bytes_remaining(len(data))
+            self._send_command_to_device(0x00186010, line, \
+                payload=True, data=data)
+            self._update_bytes_remaining(0)
 
     def set_irrad_calib_area(self, area, line=1):
         ''' Sets the colection area for irradiance calibration, Sending a
@@ -569,14 +589,209 @@ class STSVIS(object):
             stored.
         '''
         self.immediateData[0:4] = struct.unpack('<4B', struct.pack('<f', \
-            area));
+            area))
         self.immediateDataLength = 4
         self._send_command_to_device(0x00182011, line)
         self.immediateDataLength = 0
 
+    def get_stray_light_coeff_count(self, line=1):
+        ''' Returns the number of stray light coefficients
+        '''
+        return self._query_device(0x00183100, line)[0]
 
+    def get_stray_light_coeff(self, order, line=1):
+        ''' Returns the non linearity coefficient with the order of the
+            coefficient, specified by 'order'
+        '''
+        self.immediateDataLength = 1
+        self.immediateData[0] = order
+        data = self._query_device(0x00183101, line)
+        self.immediateDataLength = 0
+        return struct.unpack('<f', struct.pack('<4B', data[0], data[1], \
+            data[2], data[3]))[0]
 
+    def set_stray_light_coeff(self, order, coeff, line=1):
+        ''' Sets the stray light coefficient of order given by
+            'order' to be 'coeff'.
+        '''
+        self.immediateData[0] = order
+        self.immediateData[1:5] = struct.unpack('<4B', struct.pack('<f', coeff))
+        self.immediateDataLength = 5
+        self._send_command_to_device(0x00183111, line)
+        self.immediateDataLength = 0
 
+    def get_hot_pixel_index(self, line=1):
+        ''' Reply is up to 52 x 2-byte integers. This returns an array of
+            integer indexes of the stored hot pixels of the device.
+            If nothing has been stored this will return a NACK in Flags.
+        '''
+        data = self._query_device(0x00186000, line)
+        ind = len(data)/2
+        indices = np.zeros(ind)
+        for ab in range(ind):
+            indices[ab] = 256*data[ab*2 + 1] +data[ab*2]
+        return indices
+
+    def set_hot_pixel_index(self, indices, line=1):
+        ''' Sets the hot pixel indices of the device. It is suggested that the
+            user runs the corresponding get method first and adds any new
+            indices onto the end of this np array and then sends it to this
+            method as the indices array
+        '''
+        ind = 0
+        count = 0
+        data = np.zeros(len(indices)*2)
+        for index in indices:
+            data[ind] = index%256
+            ind += 1
+            data[ind] = (index/256)%256
+            ind += 1
+            if len(data) <= 16:
+                self.immediateData[count] = data[count]
+                count += 1
+                self.immediateData[count] = data[count]
+                count += 1
+                self.immediateDataLength = ind
+                self._send_command_to_device(0x00186010, line)
+                self.immediateDataLength = 0
+            else:
+                self._update_bytes_remaining(len(data))
+                self._send_command_to_device(0x00186010, line, \
+                    payload=True, data=data)
+                self._update_bytes_remaining(0)
+
+    def get_bench_ID(self, line=1):
+        ''' Reply is up to 32 byte ASCII string in output.
+        '''
+        string = self._query_device(0x001B0000, line)
+        result = ''
+        for ab in range(len(string)):
+            result += str(unichr(int(string[ab])))
+        return result
+
+    def get_bench_serial(self, line=1):
+        ''' Reply is an ASCII string in output.
+        '''
+        string = self._query_device(0x001B0100, line)
+        result = ''
+        for ab in range(len(string)):
+            result += str(unichr(int(string[ab])))
+        return result
+
+    def get_slit_width(self, line=1):
+        ''' Reply is a two byte integer of the slit width.
+        '''
+        data = self._query_device(0x001B0200, line)
+        width = data[0] + 256*data[10]
+        return width
+
+    def get_fiber_diameter(self, line=1):
+        ''' Reply is a two byte integer of the fiber diameter.
+        '''
+        data = self._query_device(0x001B0300, line)
+        width = data[0] + 256*data[1]
+        return width
+
+    def get_grating(self, line=1):
+        ''' Reply is an ASCII string in output.
+        '''
+        string = self._query_device(0x001B0400, line)
+        result = ''
+        for ab in range(len(string)):
+            result += str(unichr(int(string[ab])))
+        return result    
+
+    def get_filter(self, line=1):
+        ''' Reply is an ASCII string in output.
+        '''
+        string = self._query_device(0x001B0500, line)
+        result = ''
+        for ab in range(len(string)):
+            result += str(unichr(int(string[ab])))
+        return result
+
+    def get_coating(self, line=1):
+        ''' Reply is an ASCII string in output.
+        '''
+        string = self._query_device(0x001B0600, line)
+        result = ''
+        for ab in range(len(string)):
+            result += str(unichr(int(string[ab])))
+        return result
+
+    # ########################################### #
+    #     These are the GPIO command functions    #
+    # ########################################### #
+
+    def get_number_GPIO_pins(self, line=1):
+        ''' Reply is an unsigned byte of the number of pins.
+        '''
+        return self._query_device(0x00200000, line)[0]
+    
+    def get_output_enable_vector(self, line=1):
+        raise NotImplementedError
+
+    def set_output_enable_vector(self, line=1):
+        raise NotImplementedError
+
+    def get_value_vector(self, line=1):
+        raise NotImplementedError
+
+    def set_value_vector(self, line=1):
+        raise NotImplementedError
+
+    # ########################################### #
+    #    These are the strobe command functions   #
+    # ########################################### #
+
+    def set_single_strobe_pulse_delay(self, line=1):
+        raise NotImplementedError
+
+    def set_single_strobe_pulse_width(self, line=1):
+        raise NotImplementedError
+
+    def set_single_strobe_enable(self, line=1):
+        raise NotImplementedError
+
+    def set_cont_strobe_period(self, line=1):
+        raise NotImplementedError
+
+    def set_cont_strobe_enable(self, line=1):
+        raise NotImplementedError
+
+    # ########################################### #
+    #     These are the temperature functions     #
+    # ########################################### #
+
+    def get_temperature_sensor_count(self, line=1):
+        ''' Reply is a byte with the number of sensors.
+        '''
+        return self._query_device(0x00400000, line)[0]
+
+    def read_temperature_sensor(self, sensor, line=1):
+        ''' Reply is a 4-byte corresponding to a single precision float.
+            The input is which sensor to get the temperature from:
+                0 = Detector Board Thermistor
+                1 = Reserved/Internal Use
+                2 = Microcontroller Sensor Temperature
+        '''
+        self.immediateDataLength = 1
+        self.immediateData[0] = sensor
+        data = self._query_device(0x00400001, line)
+        self.immediateDataLength = 0
+        return struct.unpack('<f', struct.pack('<4B', data[0], data[1], \
+            data[2], data[3]))[0]
+
+    def read_all_temperature(self, line=1):
+        ''' Reply is 3 4-bytes corresponding to 3 single precision floats.
+            Each refers to the the result returned by the function
+            read_temperature_sensor() for all 3 possible indices.
+        '''
+        data = self._query_device(0x00400002, line)
+        self.immediateDataLength = 0
+        return struct.unpack('<3f', struct.pack('<12B', data[0], data[1], \
+            data[2], data[3], data[4], data[5], data[6], data[7], data[8], \
+            data[9], data[10], data[11]))
 
     # ########################################### #
     # The user doesn't need to see these function #
@@ -595,8 +810,8 @@ class STSVIS(object):
                 sends = len(packet)/64
 
                 # Send to the correct line then wait a small amount of time
-                for aa in range(sends):
-                    n = 64*aa
+                for ab in range(sends):
+                    n = 64*ab
                     if line == 1:
                         self._dev.write(self._EP1_out, packet[n:n+64])
                     elif line == 2:
@@ -721,8 +936,8 @@ class STSVIS(object):
             just the data from this packet
         '''
         data = np.zeros(bytes_for_reading)
-        for aa in range(bytes_for_reading):
-            data[aa] = read[24 + aa]
+        for ab in range(bytes_for_reading):
+            data[ab] = read[24 + ab]
         return data
 
     def _external_read(self, line, read, bytes_for_reading):
@@ -752,7 +967,7 @@ class STSVIS(object):
         d_bit = val%256
         self.bytesRemaining = np.array([d_bit, c_bit, b_bit, a_bit])
 
-    def _update_immediate_data(self, legnth, data):
+    def _update_immediate_data(self, length, data):
         ''' This function will replace the code in many of the sending command
             functions that make up the interface, this will just tidy up the
             code somewhat.
@@ -763,7 +978,6 @@ class STSVIS(object):
         ''' This function is the error handler, it will just print the error
             Type and the message that comes with that error out for the user.
         '''
-        
         if error == 0:
             print "No detectable errors"
         elif error == 1:
@@ -813,4 +1027,8 @@ class STSVIS(object):
         raise STS_Error('Device %s sent back error' % (self._dev, ))
 
 class STS_Error(Exception):
-    pass
+    ''' This is the error class which is raised by the Driver in its error
+        management function.
+    '''
+    def __init__(self, value):
+        print value
