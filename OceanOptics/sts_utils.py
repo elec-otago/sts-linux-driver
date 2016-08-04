@@ -148,5 +148,6 @@ def get_time_stamp(base_path):
     ts = datetime.datetime.utcnow()
     return ts, p
 
-    class OceanOpticsError(Exception):
-    pass
+    class OOError(Exception):
+        print "An Error has Occurred"
+        pass

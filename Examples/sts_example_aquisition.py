@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
 
     plt.plot(raw_data - dark_spec)
-    plt show()
+    plt.show()
 
     ''' One can also load a calibration file and then simply multiply what is
         being plotted here by this (and divide by the integration time (in 
